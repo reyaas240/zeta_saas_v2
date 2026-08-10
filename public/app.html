@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZetaPlus SaaS — App Dashboard Shell</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js for responsive analytics graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --panel-bg: rgba(15, 23, 42, 0.85);
+      --card-bg: rgba(30, 41, 59, 0.5);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --primary: #6366f1;
+      --accent: #06b6d4;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* App Shell Header */
+    header.app-header {
+      background: var(--panel-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .left-branding {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .platform-logo {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .divider-v {
+      width: 1px;
+      height: 24px;
+      background: var(--border-color);
+    }
+
+    .school-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .school-logo-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border-color);
+    }
+
+    .school-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-main);
+    }
+
+    /* Controls Bar: Branch, Syllabus & Academic Year */
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+    }
+
+    .control-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .control-select {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 0.875rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .control-select option {
+      background: #0f172a;
+      color: #fff;
+    }
+
+    .ay-badge {
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      color: var(--accent);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.825rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Right User Profile */
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .user-role {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .btn-logout {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    /* App Main Body Layout */
+    .app-body {
+      display: flex;
+      flex: 1;
+    }
+
+    /* Sidebar Navigation */
+    aside.app-sidebar {
+      width: 250px;
+      background: var(--panel-bg);
+      border-right: 1px solid var(--border-color);
+      padding: 1.5rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-item.active, .nav-item:hover {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--text-main);
+    }
+
+    .submenu-group {
+      display: flex;
+      flex-direction: column;
+      padding-left: 1.5rem;
+      gap: 0.2rem;
+      margin-top: 0.2rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .submenu-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0.75rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.825rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .submenu-item.active, .submenu-item:hover {
+      background: rgba(99, 102, 241, 0.2);
+      color: var(--primary-light);
+    }
+
+    /* Main Dashboard Content Area */
+    main.dashboard-content {
+      flex: 1;
+      padding: 2rem 2.5rem;
+    }
+
+    .page-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Exam Analytics Filter Toolbar */
+    .filter-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+
+    .filter-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .filter-item label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .filter-item select {
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.5rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      outline: none;
+    }
+
+    /* KPIs Row */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .kpi-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .kpi-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    /* Charts Grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .chart-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chart-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .chart-canvas-wrapper {
+      position: relative;
+      height: 280px;
+      width: 100%;
+    }
+
+    /* Admin RBAC Panel Styles */
+    .admin-panel {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+    }
+
+    .user-select-box {
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .rights-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .rights-table th, .rights-table td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .rights-table th {
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #334155;
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--primary);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .btn-save-rights {
+      margin-top: 1.5rem;
+      background: linear-gradient(135deg, var(--primary), #4f46e5);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    /* Responsive Media Queries */
+    @media (max-width: 1024px) {
+      aside.app-sidebar {
+        width: 70px !important;
+        padding: 1.5rem 0.4rem !important;
+      }
+      aside.app-sidebar .nav-item span,
+      aside.app-sidebar .submenu-group {
+        display: none !important;
+      }
+      aside.app-sidebar .nav-item {
+        justify-content: center;
+        padding: 0.75rem !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .app-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        height: auto;
+        padding: 1rem;
+      }
+      
+      .brand-logo-wrapper {
+        justify-content: space-between;
+      }
+      
+      .header-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+      }
+
+      .control-group {
+        justify-content: space-between;
+      }
+
+      .user-profile {
+        justify-content: space-between;
+        border-top: 1px solid var(--border-color);
+        padding-top: 0.75rem;
+      }
+
+      .app-body {
+        flex-direction: column;
+      }
+
+      aside.app-sidebar {
+        width: 100% !important;
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        padding: 0.5rem !important;
+        gap: 0.5rem !important;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      aside.app-sidebar .nav-item {
+        flex: 1;
+        min-width: 120px;
+        justify-content: center;
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.8rem !important;
+      }
+
+      aside.app-sidebar .nav-item span {
+        display: inline !important;
+      }
+
+      main.dashboard-content {
+        padding: 1rem !important;
+      }
+
+      .filter-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+      }
+
+      .filter-item {
+        width: 100%;
+      }
+
+      .filter-item select {
+        width: 100%;
+      }
+
+      .kpi-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+      }
+
+      .chart-card {
+        padding: 1rem !important;
+      }
+
+      .chart-canvas-wrapper {
+        height: 240px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Shell Top Bar -->
+  <header class="app-header">
+    <div class="left-branding">
+      <div class="platform-logo">ZetaPlus SaaS</div>
+      <div class="divider-v"></div>
+      <div class="school-info">
+        <img id="schoolLogo" class="school-logo-img" src="" alt="School Logo" style="display: none;">
+        <span id="schoolName" class="school-name">Loading school...</span>
+      </div>
+    </div>
+
+    <!-- Scoping Controls: Branch, Syllabus & Academic Year -->
+    <div class="header-controls">
+      <div class="control-group">
+        <span class="control-label">Branch:</span>
+        <select id="branchSelect" class="control-select">
+          <option value="">Loading branches...</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <span class="control-label">Syllabus:</span>
+        <select id="syllabusSelect" class="control-select">
+          <option value="">Loading syllabuses...</option>
+        </select>
+      </div>
+
+      <div class="ay-badge">
+        <span>📅</span>
+        <span id="ayBadge">Loading Year...</span>
+      </div>
+    </div>
+
+    <!-- User Profile & Logout -->
+    <div class="user-profile">
+      <div id="userAvatar" class="avatar">U</div>
+      <div class="user-details">
+        <span id="userName" class="user-name">User</span>
+        <span id="userRoleBadge" class="user-role">Authenticated Tenant User</span>
+      </div>
+      <button id="logoutBtn" class="btn-logout">Logout</button>
+    </div>
+  </header>
+
+  <!-- App Main Body -->
+  <div class="app-body">
+    <aside class="app-sidebar" id="sidebarNav">
+      <!-- Dynamic menu items injected here -->
+    </aside>
+
+    <main class="dashboard-content">
+      <!-- Standard / Default Main Dashboard View -->
+      <div id="mainViewArea">
+        <h1 id="viewTitle" class="page-title">Dashboard Overview</h1>
+        <p id="viewSubtitle" class="page-subtitle">Welcome to your dedicated school management workspace.</p>
+
+        <!-- Exam Analytics Filter Bar (Only visible under Exam Analytics) -->
+        <div id="examFilterToolbar" class="filter-toolbar" style="display: none;">
+          <div class="filter-item">
+            <label for="filterAcademicYear">Academic Year</label>
+            <select id="filterAcademicYear"><option value="">Loading...</option></select>
+          </div>
+          <div class="filter-item">
+            <label for="filterTerm">Term</label>
+            <select id="filterTerm"><option value="">All Terms</option></select>
+          </div>
+          <div class="filter-item">
+            <label for="filterClass">Class / Grade</label>
+            <select id="filterClass"><option value="">All Classes</option></select>
+          </div>
+          <div class="filter-item">
+            <label for="filterGroup">Group</label>
+            <select id="filterGroup"><option value="">All Groups</option></select>
+          </div>
+        </div>
+
+        <!-- Exam Analytics KPIs Row -->
+        <div id="examKpiGrid" class="kpi-grid" style="display: none;">
+          <div class="kpi-card">
+            <span class="kpi-title">Average Mark</span>
+            <span id="kpiAverage" class="kpi-value">0.0</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-title">Pass Rate %</span>
+            <span id="kpiPassRate" class="kpi-value">0%</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-title">Highest Mark</span>
+            <span id="kpiHighest" class="kpi-value">0</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Content Grid / Charts -->
+        <div id="cardsGrid" class="charts-grid">
+          <!-- Standard Cards or Charts dynamically rendered here -->
+        </div>
+      </div>
+
+      <!-- Admin RBAC Access Rights View -->
+      <div id="adminRbacPanel" class="admin-panel">
+        <h2 class="page-title">🛡️ User Menu Access Control</h2>
+        <p class="page-subtitle">Assign and manage menu visibility rights for users across the platform.</p>
+
+        <div class="user-select-box">
+          <label style="font-weight:600; color:var(--text-muted);">Select User:</label>
+          <select id="rbacUserSelect" class="control-select" style="background:#0f172a; padding:0.6rem 1rem; border-radius:8px; border:1px solid var(--border-color);">
+            <option value="">Loading users...</option>
+          </select>
+        </div>
+
+        <table class="rights-table">
+          <thead>
+            <tr>
+              <th>Menu Title</th>
+              <th>Key Identifier</th>
+              <th>Parent Menu</th>
+              <th>Access Granted</th>
+            </tr>
+          </thead>
+          <tbody id="rbacRightsTableBody"></tbody>
+        </table>
+
+        <button id="saveRightsBtn" class="btn-save-rights">Save Access Permissions</button>
+      </div>
+
+      <!-- Condition Builder View -->
+      <div id="conditionsBuilderPanel" class="admin-panel">
+        <h2 class="page-title">📝 Condition Formula Builder</h2>
+        <p class="page-subtitle">Define condition formulas and pass mark cutdowns for specific modules.</p>
+        
+        <div class="user-select-box">
+          <label style="font-weight:600; color:var(--text-muted);">Condition Module:</label>
+          <select id="condMasterSelect" class="control-select" style="background:#0f172a; padding:0.6rem 1rem; border-radius:8px; border:1px solid var(--border-color); flex:1;">
+            <option value="">Select Condition Module...</option>
+          </select>
+        </div>
+
+        <div id="condDetailsSection" style="display: none; flex-direction: column; gap: 1rem;">
+          <div style="display:flex; gap: 1rem;">
+            <label style="display:flex; align-items:center; gap:0.5rem; font-weight:600; color:var(--text-muted);">
+              <input type="checkbox" id="condActiveCheck" /> Condition Active
+            </label>
+            <div style="display:flex; gap:1rem; align-items:center; margin-top:0.5rem;">
+              <label style="font-weight:600; color:var(--text-muted);">Branch:</label>
+              <select id="condBranchSelect" class="control-select" style="background:#0f172a; padding:0.4rem 0.8rem; border-radius:8px; border:1px solid var(--border-color);">
+                <option value="">All Branches</option>
+                <!-- Options will be injected from global branchSelect values -->
+              </select>
+              <label style="font-weight:600; color:var(--text-muted); margin-left:0.8rem;">Syllabus:</label>
+              <select id="condSyllabusSelect" class="control-select" style="background:#0f172a; padding:0.4rem 0.8rem; border-radius:8px; border:1px solid var(--border-color);">
+                <option value="">All Syllabi</option>
+                <!-- Options will be injected from global syllabusSelect values -->
+              </select>
+            </div>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+            <h3 style="font-size: 1rem; margin-bottom: 1rem; color: #fff;">Formula Editor</h3>
+            
+            <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom: 1rem;">
+               <button onclick="insertAtCursor('condFormulaText', '{subjectTotMarks}')" class="var-btn">{subjectTotMarks}</button>
+               <button onclick="insertAtCursor('condFormulaText', '{subjectAvgMarks}')" class="var-btn">{subjectAvgMarks}</button>
+               <button onclick="insertAtCursor('condFormulaText', '{classStudentCount}')" class="var-btn">{classStudentCount}</button>
+               <button onclick="insertAtCursor('condFormulaText', '{gradeStudentCount}')" class="var-btn">{gradeStudentCount}</button>
+               <button onclick="insertAtCursor('condFormulaText', '>=')" class="var-btn">&gt;=</button>
+               <button onclick="insertAtCursor('condFormulaText', '<=')" class="var-btn">&lt;=</button>
+               <button onclick="insertAtCursor('condFormulaText', 'IF(, , )')" class="var-btn">IF()</button>
+            </div>
+            <style>
+              .var-btn { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-family: monospace; }
+              .var-btn:hover { background: #334155; color: #fff; }
+            </style>
+            
+            <div>
+              <textarea id="condFormulaText" rows="6" style="width: 100%; background:#0f172a; border:1px solid var(--border-color); color:#fff; padding:0.8rem; border-radius:8px; font-family: monospace;" placeholder="e.g. =({subjectTotMarks}>=50/{classStudentCount})*100"></textarea>
+              <small style="color:var(--text-muted); display:block; margin-top:0.5rem;">Write any formula using the variables above. Supports complex mathematical and logical operations.</small>
+            </div>
+          </div>
+
+          <button id="saveConditionBtn" class="btn-save-rights">Save Condition Settings</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let appData = null;
+    let currentActiveMenu = 'dashboard';
+    let filterOptions = null;
+    let chartInstances = {};
+
+    async function loadAppSession() {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (!response.ok) {
+          window.location.href = '/login.html';
+          return;
+        }
+
+        appData = await response.json();
+        renderHeaderData();
+        renderSidebarNav();
+      } catch (err) {
+        console.error('Session load error:', err);
+        window.location.href = '/login.html';
+      }
+    }
+
+    function renderHeaderData() {
+      if (!appData || !appData.success) return;
+      const { user, school, context, branches, syllabuses } = appData;
+
+      document.getElementById('schoolName').textContent = school.schNameEn || 'School Tenant';
+      if (school.schLogo) {
+        const logoImg = document.getElementById('schoolLogo');
+        logoImg.src = school.schLogo.startsWith('http') ? school.schLogo : `/uploads/${school.schLogo}`;
+        logoImg.style.display = 'inline-block';
+      }
+
+      document.getElementById('userName').textContent = user.username || 'User';
+      document.getElementById('userAvatar').textContent = (user.username || 'U').charAt(0).toUpperCase();
+      if (user.isSystemAdmin) {
+        document.getElementById('userRoleBadge').textContent = '🛡️ System Administrator';
+        document.getElementById('userRoleBadge').style.color = '#818cf8';
+      }
+
+      document.getElementById('ayBadge').textContent = context.academicYearDes || 'Active Year';
+
+      const branchSelect = document.getElementById('branchSelect');
+      branchSelect.innerHTML = branches.map(b => 
+        `<option value="${b.branchID}" ${b.branchID == context.branchID ? 'selected' : ''}>${b.branchDes} (${b.branchShortCode || 'Branch'})</option>`
+      ).join('');
+
+      renderSyllabusOptions(syllabuses, context.syllabusID);
+    }
+
+    function renderSyllabusOptions(syllabusesList, activeSyllabusID) {
+      const syllabusSelect = document.getElementById('syllabusSelect');
+      if (!syllabusesList || syllabusesList.length === 0) {
+        syllabusSelect.innerHTML = '<option value="">No Syllabuses</option>';
+        return;
+      }
+
+      syllabusSelect.innerHTML = syllabusesList.map(s => 
+        `<option value="${s.syllabusID}" ${s.syllabusID == activeSyllabusID ? 'selected' : ''}>${s.serviceName || 'Syllabus ' + s.syllabusID}</option>`
+      ).join('');
+    }
+
+    function renderSidebarNav() {
+      const userMenus = appData.userMenus || [];
+      const sidebarNav = document.getElementById('sidebarNav');
+
+      let navHtml = '';
+
+      if (userMenus.includes('dashboard')) {
+        navHtml += `<div class="nav-item ${currentActiveMenu === 'dashboard' ? 'active' : ''}" onclick="switchView('dashboard', 'Dashboard Overview', 'Welcome to your dedicated school management workspace.')">📊 Dashboard</div>`;
+        
+        navHtml += `<div class="submenu-group">`;
+        if (userMenus.includes('dashboard_exam')) {
+          navHtml += `<div class="submenu-item ${currentActiveMenu === 'dashboard_exam' ? 'active' : ''}" onclick="switchView('dashboard_exam', 'Exam Analytics', 'Real-time performance metrics and term exam reports.')">📝 Exam Analytics</div>`;
+        }
+        if (userMenus.includes('dashboard_fee')) {
+          navHtml += `<div class="submenu-item ${currentActiveMenu === 'dashboard_fee' ? 'active' : ''}" onclick="switchView('dashboard_fee', 'Fee Analytics', 'Fee collection, outstanding balances, and payment trends.')">💳 Fee Analytics</div>`;
+        }
+        if (userMenus.includes('dashboard_attendance')) {
+          navHtml += `<div class="submenu-item ${currentActiveMenu === 'dashboard_attendance' ? 'active' : ''}" onclick="switchView('dashboard_attendance', 'Attendance Analytics', 'Daily student and staff attendance breakdown.')">📅 Attendance Analytics</div>`;
+        }
+        navHtml += `</div>`;
+      }
+
+      const menuDefs = [
+        { key: 'students', title: 'Students', icon: '👨‍🎓' },
+        { key: 'staff', title: 'Staff & Faculty', icon: '👩‍🏫' },
+        { key: 'timetable', title: 'Timetable & Exams', icon: '📅' },
+        { key: 'fees', title: 'Fees & Billing', icon: '💳' },
+        { key: 'settings', title: 'Settings', icon: '⚙️' }
+      ];
+
+      for (const m of menuDefs) {
+        if (userMenus.includes(m.key)) {
+          navHtml += `<div class="nav-item ${currentActiveMenu === m.key ? 'active' : ''}" onclick="switchView('${m.key}', '${m.title}', 'Module management for ${m.title}.')">${m.icon} ${m.title}</div>`;
+          
+          if (m.key === 'settings' && userMenus.includes('module_conditions')) {
+            navHtml += `<div class="submenu-group">`;
+            navHtml += `<div class="submenu-item ${currentActiveMenu === 'module_conditions' ? 'active' : ''}" onclick="switchView('module_conditions', 'Condition Builder', 'Define condition formulas and pass mark cutdowns.')">📝 Condition Builder</div>`;
+            navHtml += `</div>`;
+          }
+        }
+      }
+
+      if (appData.user && appData.user.isSystemAdmin) {
+        navHtml += `<div style="margin-top: auto; border-top: 1px solid var(--border-color); padding-top: 0.5rem;"></div>`;
+        navHtml += `<div class="nav-item ${currentActiveMenu === 'admin_rbac' ? 'active' : ''}" onclick="openAdminRbacPanel()">🛡️ Access Rights</div>`;
+      }
+
+      sidebarNav.innerHTML = navHtml;
+    }
+
+    async function switchView(menuKey, title, subtitle) {
+      currentActiveMenu = menuKey;
+      renderSidebarNav();
+      
+      document.getElementById('adminRbacPanel').style.display = 'none';
+      document.getElementById('conditionsBuilderPanel').style.display = 'none';
+      document.getElementById('mainViewArea').style.display = 'block';
+
+      if (menuKey === 'module_conditions') {
+        document.getElementById('mainViewArea').style.display = 'none';
+        document.getElementById('conditionsBuilderPanel').style.display = 'block';
+        loadConditionMasters();
+        return;
+      }
+
+      document.getElementById('viewTitle').textContent = title;
+      document.getElementById('viewSubtitle').textContent = subtitle;
+
+      const filterToolbar = document.getElementById('examFilterToolbar');
+      const kpiGrid = document.getElementById('examKpiGrid');
+
+      // Reset Chart Instances
+      destroyCharts();
+
+      if (menuKey === 'dashboard_exam') {
+        filterToolbar.style.display = 'flex';
+        kpiGrid.style.display = 'grid';
+        await loadExamAnalyticsFiltersAndData();
+      } else {
+        filterToolbar.style.display = 'none';
+        kpiGrid.style.display = 'none';
+
+        const grid = document.getElementById('cardsGrid');
+        grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(280px, 1fr))';
+
+        if (menuKey === 'dashboard_fee') {
+          grid.innerHTML = `
+            <div class="module-card"><span class="status-tag">Revenue</span><h4>Term Collection</h4><p>87.5% of term tuition fees collected to date.</p></div>
+            <div class="module-card"><span class="status-tag">Pending</span><h4>Outstanding Fees</h4><p>Total pending receivables: 12,450 OMR.</p></div>
+          `;
+        } else if (menuKey === 'dashboard_attendance') {
+          grid.innerHTML = `
+            <div class="module-card"><span class="status-tag">Attendance Rate</span><h4>Student Attendance</h4><p>96.8% average daily attendance for current week.</p></div>
+            <div class="module-card"><span class="status-tag">Staff</span><h4>Faculty Attendance</h4><p>99.1% faculty presence across active branch.</p></div>
+          `;
+        } else {
+          grid.innerHTML = `
+            <div class="module-card"><span class="status-tag">Multi-Tenant Core</span><h4>Dynamic DB Scoping</h4><p>Tenant connections pooled server-side without credential exposure.</p></div>
+            <div class="module-card"><span class="status-tag">Context Switcher</span><h4>Branch & Syllabus Filtering</h4><p>Seamless context updates without re-authenticating.</p></div>
+            <div class="module-card"><span class="status-tag">Academic Year</span><h4>Live Session Integration</h4><p>Active year automatically configured from tenant tables.</p></div>
+          `;
+        }
+      }
+
+      renderSidebarNav();
+    }
+
+    function destroyCharts() {
+      Object.keys(chartInstances).forEach(key => {
+        if (chartInstances[key]) chartInstances[key].destroy();
+      });
+      chartInstances = {};
+    }
+
+    // Exam Analytics Loader & Filter Handler
+    async function loadExamAnalyticsFiltersAndData() {
+      if (!filterOptions) {
+        try {
+          const res = await fetch('/api/analytics/exam/filters');
+          filterOptions = await res.json();
+          populateFilterDropdowns();
+        } catch (err) {
+          console.error('Error fetching exam filters:', err);
+          return;
+        }
+      }
+      await fetchAndRenderExamData();
+    }
+
+    function populateFilterDropdowns() {
+      if (!filterOptions || !filterOptions.success) return;
+
+      const aySelect = document.getElementById('filterAcademicYear');
+      aySelect.innerHTML = filterOptions.academicYears.map(ay => 
+        `<option value="${ay.academicYearID}" ${ay.academicYearID == filterOptions.defaultAcademicYearID ? 'selected' : ''}>${ay.description}</option>`
+      ).join('');
+
+      const termSelect = document.getElementById('filterTerm');
+      const selectedAyID = aySelect.value;
+      const termsForAy = filterOptions.terms.filter(t => !t.academicYearID || t.academicYearID == selectedAyID);
+      termSelect.innerHTML = '<option value="">All Terms</option>' + termsForAy.map(t => 
+        `<option value="${t.termID}">${t.termDescription}</option>`
+      ).join('');
+
+      const classSelect = document.getElementById('filterClass');
+      classSelect.innerHTML = '<option value="">All Classes</option>' + filterOptions.classes.map(c => 
+        `<option value="${c.classID}">${c.className}</option>`
+      ).join('');
+
+      const groupSelect = document.getElementById('filterGroup');
+      groupSelect.innerHTML = '<option value="">All Groups</option>' + filterOptions.groups.map(g => 
+        `<option value="${g.grpID}">${g.groupName}</option>`
+      ).join('');
+
+      // Wire change handlers
+      aySelect.onchange = () => {
+        populateFilterDropdowns();
+        fetchAndRenderExamData();
+      };
+      termSelect.onchange = fetchAndRenderExamData;
+      classSelect.onchange = fetchAndRenderExamData;
+      groupSelect.onchange = fetchAndRenderExamData;
+    }
+
+    async function fetchAndRenderExamData() {
+      const ay = document.getElementById('filterAcademicYear').value;
+      const term = document.getElementById('filterTerm').value;
+      const cls = document.getElementById('filterClass').value;
+      const grp = document.getElementById('filterGroup').value;
+
+      const queryParams = new URLSearchParams();
+      if (ay) queryParams.append('academicYearID', ay);
+      if (term) queryParams.append('termID', term);
+      if (cls) queryParams.append('classID', cls);
+      if (grp) queryParams.append('grpID', grp);
+
+      try {
+        const res = await fetch(`/api/analytics/exam/data?${queryParams.toString()}`);
+        const data = await res.json();
+        if (!data.success) return;
+
+        // Render KPIs
+        document.getElementById('kpiAverage').textContent = data.kpis.overallAverage;
+        document.getElementById('kpiPassRate').textContent = `${data.kpis.passRate}%`;
+        document.getElementById('kpiHighest').textContent = data.kpis.highestScore;
+
+        // Render Charts Container
+        const grid = document.getElementById('cardsGrid');
+        grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(420px, 1fr))';
+        grid.innerHTML = `
+          <div class="chart-card" style="grid-column: 1 / -1;">
+            <div class="chart-header">
+              <span class="chart-title">Subject Class Average vs Highest</span>
+              <span style="font-size:11px;color:#64748b;margin-left:8px;">Source: srp_termreportmarksaverage</span>
+            </div>
+            <div class="chart-canvas-wrapper" style="height:320px;"><canvas id="subjectPerfChart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header"><span class="chart-title">Grade Distribution</span></div>
+            <div class="chart-canvas-wrapper"><canvas id="gradeDistChart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header"><span class="chart-title">Term Progression Trend</span></div>
+            <div class="chart-canvas-wrapper"><canvas id="termTrendChart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header"><span class="chart-title">Class Average Comparison</span></div>
+            <div class="chart-canvas-wrapper"><canvas id="classPerfChart"></canvas></div>
+          </div>
+        `;
+
+        destroyCharts();
+        renderExamCharts(data);
+      } catch (err) {
+        console.error('Error fetching exam data:', err);
+      }
+    }
+
+    function renderExamCharts(data) {
+      // 1. Grade Distribution Donut
+      const gradeLabels = Object.keys(data.gradeDistribution);
+      const gradeCounts = Object.values(data.gradeDistribution);
+
+      chartInstances.grade = new Chart(document.getElementById('gradeDistChart'), {
+        type: 'doughnut',
+        data: {
+          labels: gradeLabels,
+          datasets: [{
+            data: gradeCounts,
+            backgroundColor: ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#64748b']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#94a3b8' } } } }
+      });
+
+      // 2. Subject Performance Grouped Bar (from srp_termreportmarksaverage)
+      const subLabels = data.subjectPerformance.map(s => s.subjectName);
+      const subAvgs  = data.subjectPerformance.map(s => s.classAvg);
+      const subHighs = data.subjectPerformance.map(s => s.highestMark);
+
+      chartInstances.subject = new Chart(document.getElementById('subjectPerfChart'), {
+        type: 'bar',
+        data: {
+          labels: subLabels,
+          datasets: [
+            {
+              label: 'Class Avg',
+              data: subAvgs,
+              backgroundColor: 'rgba(99, 102, 241, 0.85)',
+              borderColor: '#6366f1',
+              borderWidth: 1,
+              borderRadius: 5
+            },
+            {
+              label: 'Highest Mark',
+              data: subHighs,
+              backgroundColor: 'rgba(6, 182, 212, 0.85)',
+              borderColor: '#06b6d4',
+              borderWidth: 1,
+              borderRadius: 5
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          layout: {
+            padding: {
+              top: 15
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: '#94a3b8',
+                maxRotation: 35,
+                font: { size: 11 }
+              },
+              grid: { color: 'rgba(255,255,255,0.04)' }
+            },
+            y: {
+              min: 0,
+              max: 105,
+              ticks: {
+                color: '#94a3b8',
+                callback: v => v <= 100 ? v + '%' : ''
+              },
+              grid: { color: 'rgba(255,255,255,0.06)' }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1', boxWidth: 14, padding: 24 }
+            },
+            tooltip: {
+              callbacks: {
+                label: ctx => ` ${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(2)}%`
+              }
+            }
+          }
+        },
+        plugins: [{
+          id: 'barLabels',
+          afterDatasetsDraw(chart) {
+            const { ctx } = chart;
+            ctx.save();
+            ctx.font = 'bold 9px sans-serif';
+            ctx.fillStyle = '#cbd5e1';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            chart.data.datasets.forEach((dataset, i) => {
+              if (!chart.isDatasetVisible(i)) return;
+              const meta = chart.getDatasetMeta(i);
+              meta.data.forEach((bar, index) => {
+                const val = dataset.data[index];
+                if (val !== null && val !== undefined) {
+                  ctx.fillText(Number(val).toFixed(2), bar.x, bar.y - 4);
+                }
+              });
+            });
+            ctx.restore();
+          }
+        }]
+      });
+
+      // 3. Term Trend Line Chart
+      const termLabels = data.termTrend.map(t => t.termDescription);
+      const termAvgs = data.termTrend.map(t => t.termAvg);
+
+      chartInstances.trend = new Chart(document.getElementById('termTrendChart'), {
+        type: 'line',
+        data: {
+          labels: termLabels,
+          datasets: [{
+            label: 'Overall Term Average',
+            data: termAvgs,
+            borderColor: '#06b6d4',
+            backgroundColor: 'rgba(6, 182, 212, 0.1)',
+            fill: true,
+            tension: 0.3,
+            pointBackgroundColor: '#06b6d4',
+            pointRadius: 5
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: '#94a3b8', callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+          },
+          plugins: { legend: { labels: { color: '#94a3b8' } } }
+        }
+      });
+
+      // 4. Class Average Comparison Bar
+      const classLabels = data.classPerformance.map(c => c.className);
+      const classAvgs = data.classPerformance.map(c => c.classAvg);
+
+      chartInstances.class = new Chart(document.getElementById('classPerfChart'), {
+        type: 'bar',
+        data: {
+          labels: classLabels,
+          datasets: [{
+            label: 'Class Average %',
+            data: classAvgs,
+            backgroundColor: classAvgs.map((v, i) => `hsla(${240 + i * 20}, 70%, 60%, 0.8)`),
+            borderRadius: 5
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { min: 0, max: 100, ticks: { color: '#94a3b8', callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+          },
+          plugins: { legend: { labels: { color: '#94a3b8' } } }
+        }
+      });
+    }
+
+    // Admin RBAC Functions
+    async function openAdminRbacPanel() {
+      currentActiveMenu = 'admin_rbac';
+      renderSidebarNav();
+
+      document.getElementById('mainViewArea').style.display = 'none';
+      document.getElementById('conditionsBuilderPanel').style.display = 'none';
+      document.getElementById('adminRbacPanel').style.display = 'block';
+
+      try {
+        const res = await fetch('/api/admin/users');
+        const data = await res.json();
+        if (!data.success) return alert(data.error);
+
+        const userSelect = document.getElementById('rbacUserSelect');
+        userSelect.innerHTML = data.users.map(u => 
+          `<option value="${u.userID}">${u.username} (${u.isSystemAdmin ? 'Admin' : 'User ID ' + u.userID})</option>`
+        ).join('');
+
+        userSelect.onchange = () => loadUserRights(userSelect.value);
+        if (data.users.length > 0) {
+          loadUserRights(data.users[0].userID);
+        }
+      } catch (err) {
+        console.error('Error loading admin users:', err);
+      }
+    }
+
+    async function loadUserRights(userID) {
+      try {
+        const res = await fetch(`/api/admin/user-rights/${userID}`);
+        const data = await res.json();
+        if (!data.success) return alert(data.error);
+
+        const tbody = document.getElementById('rbacRightsTableBody');
+        tbody.innerHTML = data.menus.map(m => `
+          <tr>
+            <td>${m.icon} <strong>${m.menuTitle}</strong></td>
+            <td><code>${m.menuKey}</code></td>
+            <td>${m.parentKey || '<span style="color:var(--text-muted);">-</span>'}</td>
+            <td>
+              <label class="toggle-switch">
+                <input type="checkbox" class="rbac-checkbox" data-menukey="${m.menuKey}" ${m.hasAccess ? 'checked' : ''}>
+                <span class="slider"></span>
+              </label>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('Error loading user rights:', err);
+      }
+    }
+
+    document.getElementById('saveRightsBtn').addEventListener('click', async () => {
+      const userID = document.getElementById('rbacUserSelect').value;
+      if (!userID) return;
+
+      const checkboxes = document.querySelectorAll('.rbac-checkbox');
+      const menuRights = {};
+      checkboxes.forEach(cb => {
+        menuRights[cb.dataset.menukey] = cb.checked;
+      });
+
+      try {
+        const res = await fetch(`/api/admin/user-rights/${userID}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ menuRights })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Access rights saved successfully!');
+          loadAppSession();
+        } else {
+          alert('Failed to save rights: ' + data.error);
+        }
+      } catch (err) {
+        alert('Network error saving rights.');
+      }
+    });
+
+    // Branch & Syllabus Switch Handlers
+    document.getElementById('branchSelect').addEventListener('change', async (e) => {
+      const newBranchID = e.target.value;
+      const currentSyllabusID = document.getElementById('syllabusSelect').value;
+      await updateContext(newBranchID, currentSyllabusID);
+    });
+
+    document.getElementById('syllabusSelect').addEventListener('change', async (e) => {
+      const currentBranchID = document.getElementById('branchSelect').value;
+      const newSyllabusID = e.target.value;
+      await updateContext(currentBranchID, newSyllabusID);
+    });
+
+    async function updateContext(branchID, syllabusID) {
+      try {
+        const response = await fetch('/api/auth/switch-context', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ branchID, syllabusID })
+        });
+
+        const resData = await response.json();
+        if (resData.success) {
+          appData.context = resData.context;
+          renderSyllabusOptions(resData.syllabuses, resData.context.syllabusID);
+          document.getElementById('ayBadge').textContent = resData.context.academicYearDes;
+          filterOptions = null; // Refresh filter dropdown options for new branch context
+        } else {
+          alert('Failed to switch context: ' + resData.error);
+        }
+      } catch (err) {
+        console.error('Error switching context:', err);
+        alert('Network error switching branch/syllabus context.');
+      }
+    }
+
+    // Logout Handler
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      window.location.href = '/login.html';
+    });
+
+    // --- Condition Builder Logic ---
+    let conditionMasters = [];
+    
+    async function loadConditionMasters() {
+      try {
+        const res = await fetch('/api/conditions/master');
+        const data = await res.json();
+        if (data.success) {
+          conditionMasters = data.data;
+          const select = document.getElementById('condMasterSelect');
+          select.innerHTML = '<option value="">Select Condition Module...</option>' + 
+            conditionMasters.map(m => `<option value="${m.conditionMasID}">${m.conditionName} (${m.conditionModuleType})</option>`).join('');
+          
+          document.getElementById('condDetailsSection').style.display = 'none';
+        }
+      } catch (err) {
+        console.error('Failed to load condition masters', err);
+      }
+    }
+
+    document.getElementById('condMasterSelect').addEventListener('change', async (e) => {
+      const masID = e.target.value;
+      if (!masID) {
+        document.getElementById('condDetailsSection').style.display = 'none';
+        return;
+      }
+      
+      // Populate branch and syllabus selects from the global filters (if they exist)
+      const globalBranch = document.getElementById('branchSelect');
+      const globalSyllabus = document.getElementById('syllabusSelect');
+      if (globalBranch && document.getElementById('condBranchSelect')) {
+        document.getElementById('condBranchSelect').innerHTML = '<option value="">All Branches</option>' + globalBranch.innerHTML;
+      }
+      if (globalSyllabus && document.getElementById('condSyllabusSelect')) {
+        document.getElementById('condSyllabusSelect').innerHTML = '<option value="">All Syllabi</option>' + globalSyllabus.innerHTML;
+      }
+
+      try {
+        const res = await fetch(`/api/conditions/details/${masID}`);
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('condDetailsSection').style.display = 'flex';
+          const detail = data.data.length > 0 ? data.data[0] : null;
+          
+          if (detail) {
+            document.getElementById('condActiveCheck').checked = detail.conditionActive === 1;
+            document.getElementById('condPassMark').value = detail.passMark || '';
+            document.getElementById('condFormulaText').value = detail.conformula || '';
+            document.getElementById('condBranchSelect').value = detail.branchID || '';
+            document.getElementById('condSyllabusSelect').value = detail.syllabusID || '';
+          } else {
+            // Reset for new
+            document.getElementById('condActiveCheck').checked = false;
+            document.getElementById('condPassMark').value = '';
+            document.getElementById('condFormulaText').value = '';
+            document.getElementById('condBranchSelect').value = '';
+            document.getElementById('condSyllabusSelect').value = '';
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load condition details', err);
+      }
+    });
+
+    function insertAtCursor(elementId, textToInsert) {
+      const el = document.getElementById(elementId);
+      const startPos = el.selectionStart;
+      const endPos = el.selectionEnd;
+      el.value = el.value.substring(0, startPos) + textToInsert + el.value.substring(endPos, el.value.length);
+      el.focus();
+      el.selectionStart = startPos + textToInsert.length;
+      el.selectionEnd = startPos + textToInsert.length;
+    }
+
+    document.getElementById('saveConditionBtn').addEventListener('click', async () => {
+      const masID = document.getElementById('condMasterSelect').value;
+      if (!masID) {
+        alert('Please select a condition module.');
+        return;
+      }
+      
+      const payload = {
+        conditionMasID: masID,
+        conditionActive: document.getElementById('condActiveCheck').checked,
+        passMark: parseFloat(document.getElementById('condPassMark').value) || null,
+        conformula: document.getElementById('condFormulaText').value,
+        branchID: document.getElementById('condBranchSelect').value || null,
+        syllabusID: document.getElementById('condSyllabusSelect').value || null
+      };
+      
+      try {
+        const res = await fetch('/api/conditions/details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Condition saved successfully!');
+        } else {
+          alert('Failed to save condition: ' + data.error);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Network error saving condition.');
+      }
+    });
+
+    loadAppSession();
+  </script>
+</body>
+</html>

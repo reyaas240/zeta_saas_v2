@@ -1,0 +1,46 @@
+<!-- Standard / Default Main Dashboard View -->
+<div id="mainViewArea">
+  <h1 id="viewTitle" class="page-title">Dashboard Overview</h1>
+  <p id="viewSubtitle" class="page-subtitle">Welcome to your dedicated school management workspace.</p>
+
+  <!-- Exam Analytics Filter Bar (Only visible under Exam Analytics) -->
+  <div id="examFilterToolbar" class="filter-toolbar" style="display: none;">
+    <div class="filter-item">
+      <label for="filterAcademicYear">Academic Year</label>
+      <select id="filterAcademicYear"><option value="">Loading...</option></select>
+    </div>
+    <div class="filter-item">
+      <label for="filterTerm">Term</label>
+      <select id="filterTerm"><option value="">All Terms</option></select>
+    </div>
+    <div class="filter-item">
+      <label for="filterClass">Class / Grade</label>
+      <select id="filterClass"><option value="">All Classes</option></select>
+    </div>
+    <div class="filter-item">
+      <label for="filterGroup">Group</label>
+      <select id="filterGroup"><option value="">All Groups</option></select>
+    </div>
+  </div>
+
+  <!-- Exam Analytics KPIs Row -->
+  <div id="examKpiGrid" class="kpi-grid" style="display: none;">
+    <div class="kpi-card">
+      <span class="kpi-title">Average Mark</span>
+      <span id="kpiAverage" class="kpi-value">0.0</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Pass Rate %</span>
+      <span id="kpiPassRate" class="kpi-value">0%</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Highest Mark</span>
+      <span id="kpiHighest" class="kpi-value">0</span>
+    </div>
+  </div>
+
+  <!-- Dynamic Content Grid / Charts -->
+  <div id="cardsGrid" class="charts-grid">
+    <!-- Standard Cards or Charts dynamically rendered here -->
+  </div>
+</div>

@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { getMasterDb, getTenantDb, getSchoolTenantInfo } from './db.js';
 import { verifyPassword } from './passwordUtil.js';
-import { getUserAllowedMenus } from './rbacUtil.js';
+import { getUserAllowedMenus, getAllMenus } from './rbacUtil.js';
 
 dotenv.config();
 
@@ -44,7 +44,7 @@ authRouter.post('/login', async (req, res) => {
 
     // 2. Look up user in zetaplus_maindb.user by Username
     const [userRows] = await masterDb.query(
-      `SELECT EidNo, Username, Password, schMasterID, branchID, isSystemAdmin 
+      `SELECT EidNo, Username, Password, schMasterID, branchID, isSystemAdmin, empID 
        FROM user 
        WHERE Username = ? 
        LIMIT 1`,
@@ -135,6 +135,7 @@ authRouter.post('/login', async (req, res) => {
     // 10. Establish server session via HTTP-only cookie
     const tokenPayload = {
       userID: user.EidNo,
+      empID: user.empID,
       username: user.Username,
       schMasterID,
       branchID,
@@ -158,6 +159,7 @@ authRouter.post('/login', async (req, res) => {
       platform: 'ZetaPlus School SaaS',
       user: {
         userID: user.EidNo,
+        empID: user.empID,
         username: user.Username,
         isSystemAdmin: Boolean(user.isSystemAdmin)
       },
@@ -232,15 +234,18 @@ authRouter.get('/me', requireTenantAuth, async (req, res) => {
     const activeAcademicYearDes = academicRows.length > 0 ? (academicRows[0].AY_Description || `Academic Year (${academicRows[0].AcademicYear})`) : 'Academic Year Not Configured';
 
     const userMenus = await getUserAllowedMenus(req.tenantContext.userID, Boolean(req.tenantContext.isSystemAdmin));
+    const allMenus = await getAllMenus();
 
     res.json({
       success: true,
       user: {
         userID: req.tenantContext.userID,
+        empID: req.tenantContext.empID,
         username: req.tenantContext.username,
         isSystemAdmin: Boolean(req.tenantContext.isSystemAdmin)
       },
       userMenus,
+      allMenus,
       school: {
         schMasterID: schoolInfo.SchMasterID,
         schNameEn: schoolInfo.SchNameEn,

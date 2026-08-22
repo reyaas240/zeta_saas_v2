@@ -1,5 +1,5 @@
 import express from 'express';
-import { getMasterDb } from './db.js';
+import { getMasterDb, getTenantDb } from './db.js';
 import { requireTenantAuth } from './authRouter.js';
 import { getAllMenus, saveUserMenuRights } from './rbacUtil.js';
 
@@ -16,29 +16,61 @@ function requireSystemAdmin(req, res, next) {
 adminRouter.use(requireTenantAuth, requireSystemAdmin);
 
 /**
- * List all users under the school/master DB
+ * List all users under the school/master DB, filtered by logged-in user's school.
+ * Employee names are fetched from the tenant DB's srp_employeesdetails table,
+ * linked via EidNo (user.empID) <-> srp_employeesdetails.empID.
  */
 adminRouter.get('/users', async (req, res) => {
   try {
-    const db = getMasterDb();
-    const [users] = await db.query(
-      `SELECT EidNo, Username, email, isSystemAdmin, schMasterID, branchID 
-       FROM user 
-       WHERE schMasterID = ? OR isSystemAdmin = 1 
+    const masterDb = getMasterDb();
+
+    // Fetch users from master DB for the current school only
+    const [users] = await masterDb.query(
+      `SELECT EidNo, empID, Username, email, isSystemAdmin, schMasterID, branchID
+       FROM user
+       WHERE schMasterID = ?
        ORDER BY EidNo ASC`,
       [req.tenantContext.schMasterID]
     );
 
-    res.json({
-      success: true,
-      users: users.map(u => ({
+    // Fetch employee names from tenant DB
+    // Link: user.empID (maindb) <-> srp_employeesdetails.EIdNo (tenant db)
+    let enrichedUsers = [];
+    try {
+      const tenantDb = await getTenantDb(req.tenantContext.schMasterID);
+      const [empRows] = await tenantDb.query('SELECT EIdNo, Ename1, isLeft FROM srp_employeesdetails');
+      // Map: EIdNo -> { Ename1, isLeft }
+      const empMap = new Map(empRows.map(r => [r.EIdNo, { name: r.Ename1, isLeft: r.isLeft }]));
+
+      enrichedUsers = users
+        .filter(u => {
+          const emp = empMap.get(u.empID);
+          // Include user only if they have an active employee record (isLeft = 0 or null)
+          return emp && (emp.isLeft === 0 || emp.isLeft === null || emp.isLeft === '0');
+        })
+        .map(u => ({
+          userID: u.EidNo,
+          username: u.Username,
+          email: u.email,
+          isSystemAdmin: Boolean(u.isSystemAdmin),
+          schMasterID: u.schMasterID,
+          branchID: u.branchID,
+          employeeName: empMap.get(u.empID)?.name || u.Username
+        }));
+    } catch (tenantErr) {
+      console.warn('[Admin API warning] Tenant DB fetch failed, returning users without employee names:', tenantErr.message);
+      enrichedUsers = users.map(u => ({
         userID: u.EidNo,
         username: u.Username,
         email: u.email,
         isSystemAdmin: Boolean(u.isSystemAdmin),
-        schMasterID: u.schMasterID
-      }))
-    });
+        schMasterID: u.schMasterID,
+        branchID: u.branchID,
+        employeeName: u.Username
+      }));
+    }
+
+    res.json({ success: true, users: enrichedUsers });
   } catch (err) {
     console.error('[Admin API error]:', err);
     res.status(500).json({ success: false, error: 'Failed to fetch users.' });
@@ -53,16 +85,15 @@ adminRouter.get('/user-rights/:userID', async (req, res) => {
     const targetUserID = parseInt(req.params.userID, 10);
     const db = getMasterDb();
 
-    // Fetch user info
-    const [userRows] = await db.query(`SELECT EidNo, Username, isSystemAdmin FROM user WHERE EidNo = ?`, [targetUserID]);
+    const [userRows] = await db.query('SELECT EidNo, Username, isSystemAdmin FROM user WHERE EidNo = ?', [targetUserID]);
     if (!userRows || userRows.length === 0) {
       return res.status(404).json({ success: false, error: 'User not found.' });
     }
     const targetUser = userRows[0];
 
     const allMenus = await getAllMenus();
-    const [rights] = await db.query(`SELECT menuKey, hasAccess FROM saas_user_menu_rights WHERE userID = ?`, [targetUserID]);
-    
+    const [rights] = await db.query('SELECT menuKey, hasAccess FROM saas_user_menu_rights WHERE userID = ?', [targetUserID]);
+
     const rightsMap = new Map(rights.map(r => [r.menuKey, Boolean(r.hasAccess)]));
 
     const menusWithStatus = allMenus.map(m => ({
@@ -78,6 +109,7 @@ adminRouter.get('/user-rights/:userID', async (req, res) => {
       user: {
         userID: targetUser.EidNo,
         username: targetUser.Username,
+  
         isSystemAdmin: Boolean(targetUser.isSystemAdmin)
       },
       menus: menusWithStatus
@@ -94,7 +126,7 @@ adminRouter.get('/user-rights/:userID', async (req, res) => {
 adminRouter.post('/user-rights/:userID', async (req, res) => {
   try {
     const targetUserID = parseInt(req.params.userID, 10);
-    const { menuRights } = req.body; // e.g. { dashboard_exam: true, dashboard_fee: false }
+    const { menuRights } = req.body;
 
     if (!menuRights || typeof menuRights !== 'object') {
       return res.status(400).json({ success: false, error: 'Invalid menuRights payload.' });

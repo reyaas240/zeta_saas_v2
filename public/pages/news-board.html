@@ -1,0 +1,26 @@
+<div id="newsBoardPanel" class="admin-panel">
+  <div class="news-board-heading">
+    <div><h2 class="page-title">📢 Notice Board</h2><p class="page-subtitle">Create, publish, and manage notices for your school community.</p></div>
+    <button id="nbAddButton" class="btn-save-rights" type="button" onclick="openNoticeForm()">+ Add notice</button>
+  </div>
+  <div class="news-board-filters">
+    <label>Date <select id="nbDateFilter" class="control-select"><option value="">All dates</option></select></label>
+    <label>Status <select id="nbStatusFilter" class="control-select"><option value="active">Not expired</option><option value="all">All</option><option value="expired">Expired</option></select></label>
+  </div>
+  <div id="nbMessage" class="news-board-message" role="status"></div>
+  <div id="nbList" class="news-board-list"><div class="page-loading">Loading notices…</div></div>
+
+  <div id="nbModal" class="news-board-modal" hidden>
+    <form id="nbForm" class="news-board-form">
+      <div class="news-board-form-head"><h3 id="nbFormTitle">Add notice</h3><button type="button" class="theme-toggle" onclick="closeNoticeForm()" aria-label="Close">×</button></div>
+      <input id="nbId" type="hidden">
+      <div class="news-board-form-grid"><label>News date<input id="nbNewsDate" type="date" required></label><label>Expires on <input id="nbExpiresOn" type="date"></label></div>
+      <label>Subject<input id="nbSubject" maxlength="255" required></label>
+      <label>Description<textarea id="nbDescription" rows="6" required placeholder="Write the notice here..."></textarea></label>
+      <fieldset><legend>News for</legend><label><input id="nbForEmployees" type="checkbox"> Staff</label><label><input id="nbForStudents" type="checkbox"> Students</label><label><input id="nbForParents" type="checkbox"> Parents</label></fieldset>
+      <label>Cover-image reference <input id="nbCoverImage" placeholder="Existing image path, if available"></label>
+      <label class="nb-inline"><input id="nbSubmitted" type="checkbox"> Publish notice</label>
+      <div class="news-board-actions"><button type="button" class="btn-logout" onclick="closeNoticeForm()">Cancel</button><button class="btn-save-rights" type="submit">Save notice</button></div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,63 @@
+<!-- Template Builder View -->
+<div id="templateBuilderPanel" class="admin-panel">
+  <h2 class="page-title">🛠️ Exam Template Builder</h2>
+  <p class="page-subtitle">Configure mark entry columns and formulas for any exam.</p>
+
+  <!-- Filter Bar -->
+  <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; margin-bottom:1.5rem; padding:1rem; background:rgba(255,255,255,0.03); border-radius:10px; border:1px solid var(--border-color);">
+    <div style="display:flex;flex-direction:column;gap:0.25rem;">
+      <label style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Academic Year</label>
+      <select id="tbAcademicYear" class="control-select" style="background:#0f172a;padding:0.5rem 0.75rem;border-radius:7px;border:1px solid var(--border-color);min-width:130px;"><option value="">Loading...</option></select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.25rem;">
+      <label style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Term</label>
+      <select id="tbTerm" class="control-select" style="background:#0f172a;padding:0.5rem 0.75rem;border-radius:7px;border:1px solid var(--border-color);min-width:130px;"><option value="">All Terms</option></select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.25rem;">
+      <label style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Class</label>
+      <select id="tbClass" class="control-select" style="background:#0f172a;padding:0.5rem 0.75rem;border-radius:7px;border:1px solid var(--border-color);min-width:130px;"><option value="">All Classes</option></select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.25rem;">
+      <label style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Subject</label>
+      <select id="tbSubject" class="control-select" style="background:#0f172a;padding:0.5rem 0.75rem;border-radius:7px;border:1px solid var(--border-color);min-width:130px;"><option value="">All Subjects</option></select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.25rem;">
+      <label style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Exam</label>
+      <select id="tbExam" class="control-select" style="background:#0f172a;padding:0.5rem 0.75rem;border-radius:7px;border:1px solid var(--border-color);min-width:200px;"><option value="">Select Exam...</option></select>
+    </div>
+  </div>
+
+  <!-- Workspace (hidden until exam is selected) -->
+  <div id="templateWorkspace" style="display:none;">
+    <!-- Marks Categories Reference -->
+    <div id="tbMarksCategoriesRef" style="margin-bottom:1rem; padding:0.75rem 1rem; background:rgba(99,102,241,0.07); border-radius:8px; border:1px solid rgba(99,102,241,0.2); display:none;">
+      <strong style="color:var(--primary-light); font-size:0.85rem;">📋 Available Marks Categories for this Exam:</strong>
+      <div id="tbMarksCategoriesList" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.5rem;"></div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h3 style="color: #fff; font-size: 1.1rem;">Template Columns</h3>
+      <button id="addTemplateColBtn" style="background:var(--primary-color); color:#fff; border:none; padding:0.5rem 1.25rem; border-radius:6px; cursor:pointer; font-weight:bold;">+ Add Column</button>
+    </div>
+
+    <table class="rights-table" style="margin-bottom:1.5rem;">
+      <thead>
+        <tr>
+          <th style="width:40px;">#</th>
+          <th>Column Label</th>
+          <th style="width:160px;">Type</th>
+          <th>Marks Category (if Marks) / Formula (if Computed)</th>
+          <th style="width:70px;">Remove</th>
+        </tr>
+      </thead>
+      <tbody id="tbColumnsBody">
+        <!-- rows injected by JS -->
+      </tbody>
+      <tbody id="tbStaticColumnsBody" style="background:rgba(0,0,0,0.15);">
+        <!-- static final total and grade rows -->
+      </tbody>
+    </table>
+
+    <button id="saveTemplateConfigBtn" class="btn-save-rights">💾 Save Template Configuration</button>
+  </div>
+</div>

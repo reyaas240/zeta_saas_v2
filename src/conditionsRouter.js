@@ -66,14 +66,14 @@ conditionsRouter.post('/details', async (req, res) => {
         `UPDATE saas_conditionsdetails 
          SET conformula = ?, conditionActive = ?, passMark = ?, branchID = ?, syllabusID = ?
          WHERE conditionMasID = ?`,
-        [conformula, conditionActive ? 1 : 0, passMark || null, branchID, syllabusID, conditionMasID]
+        [conformula, conditionActive ? 1 : 0, passMark || null, branchID || 0, syllabusID || 0, conditionMasID]
       );
     } else {
       // Insert
       await tenantDb.query(
         `INSERT INTO saas_conditionsdetails (conditionMasID, conformula, conditionActive, passMark, branchID, syllabusID)
          VALUES (?, ?, ?, ?, ?, ?)`,
-        [conditionMasID, conformula, conditionActive ? 1 : 0, passMark || null, branchID, syllabusID]
+        [conditionMasID, conformula, conditionActive ? 1 : 0, passMark || null, branchID || 0, syllabusID || 0]
       );
     }
 

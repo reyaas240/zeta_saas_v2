@@ -1,0 +1,82 @@
+<!-- Marks Entry Panel -->
+<div id="marksEntryPanel" class="admin-panel">
+  <h2 class="page-title">✏️ Marks Entry</h2>
+  <p class="page-subtitle">Enter exam marks per student based on the configured template.</p>
+
+  <!-- Filters -->
+  <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:flex-end; margin-bottom:1.5rem; padding:1rem; background:rgba(255,255,255,0.03); border-radius:10px; border:1px solid var(--border-color);">
+    <div id="meEmployeeContainer" style="display:none;flex-direction:column;gap:0.25rem;">
+      <label style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Employee</label>
+      <select id="meEmployee" class="control-select" style="background:#0f172a;padding:0.5rem 0.75rem;border-radius:7px;border:1px solid var(--border-color);min-width:180px;"><option value="">All Employees</option></select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.25rem;">
+      <label style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Academic Year</label>
+      <select id="meAcademicYear" class="control-select" style="background:#0f172a;padding:0.5rem 0.75rem;border-radius:7px;border:1px solid var(--border-color);min-width:130px;"><option value="">Loading...</option></select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.25rem;">
+      <label style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Term</label>
+      <select id="meTerm" class="control-select" style="background:#0f172a;padding:0.5rem 0.75rem;border-radius:7px;border:1px solid var(--border-color);min-width:130px;"><option value="">All Terms</option></select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.25rem;">
+      <label style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Class</label>
+      <select id="meClass" class="control-select" style="background:#0f172a;padding:0.5rem 0.75rem;border-radius:7px;border:1px solid var(--border-color);min-width:130px;"><option value="">All Classes</option></select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.25rem;">
+      <label style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Subject</label>
+      <select id="meSubject" class="control-select" style="background:#0f172a;padding:0.5rem 0.75rem;border-radius:7px;border:1px solid var(--border-color);min-width:130px;"><option value="">All Subjects</option></select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.25rem;">
+      <label style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Exam</label>
+      <select id="meExam" class="control-select" style="background:#0f172a;padding:0.5rem 0.75rem;border-radius:7px;border:1px solid var(--border-color);min-width:220px;"><option value="">Select Exam...</option></select>
+    </div>
+    <button onclick="loadMarksGrid()" style="background:var(--primary-color);color:#fff;border:none;padding:0.55rem 1.25rem;border-radius:7px;cursor:pointer;font-weight:600;">Load Grid</button>
+  </div>
+
+  <!-- Grid workspace -->
+  <div id="meGridWorkspace" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+      <h3 id="meGridTitle" style="color:#fff; font-size:1rem;"></h3>
+      <div style="display:flex; gap:0.5rem;">
+        <button onclick="exportMarksToExcel()" title="Export Excel" style="background:transparent; border:none; padding:0.25rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M14 2V8H20" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5" y="10" width="14" height="5" fill="#22c55e" rx="0.5"/>
+            <text x="12" y="12.5" fill="#fff" font-size="4" font-family="sans-serif" font-weight="900" text-anchor="middle" dominant-baseline="central">XLS</text>
+            <path d="M12 17V21M12 21L10 19M12 21L14 19" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button onclick="printMarksToPDF()" title="Print PDF" style="background:transparent; border:none; padding:0.25rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M14 2V8H20" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5" y="10" width="14" height="5" fill="#ef4444" rx="0.5"/>
+            <text x="12" y="12.5" fill="#fff" font-size="4" font-family="sans-serif" font-weight="900" text-anchor="middle" dominant-baseline="central">PDF</text>
+            <path d="M12 17V21M12 21L10 19M12 21L14 19" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button id="saveMarksBtn" class="btn-save-rights" style="padding:0.5rem 1.5rem; margin-left:0.5rem;">💾 Save All Marks</button>
+      </div>
+    </div>
+
+    <div style="overflow-x:auto; border-radius:10px; border:1px solid var(--border-color);">
+      <table id="meGrid" style="width:100%; border-collapse:collapse; min-width:600px;">
+        <thead id="meGridHead" style="background:rgba(99,102,241,0.15);"></thead>
+        <tbody id="meGridBody"></tbody>
+      </table>
+    </div>
+
+    <div id="meGridStatus" style="margin-top:0.75rem; color:var(--text-muted); font-size:0.85rem;"></div>
+  </div>
+</div>
+
+<!-- PDF Viewer Modal (global - lives outside the panel) -->
+<div id="pdfModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
+  <div style="width:90%; height:90%; background:#fff; border-radius:10px; overflow:hidden; display:flex; flex-direction:column;">
+    <div style="background:#1e293b; padding:10px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="color:#fff; margin:0; font-size:1.1rem;">📄 PDF Viewer</h3>
+      <button onclick="document.getElementById('pdfModal').style.display='none'" style="background:var(--danger); color:#fff; border:none; padding:5px 15px; border-radius:5px; cursor:pointer;">Close</button>
+    </div>
+    <iframe id="pdfViewerFrame" style="flex:1; width:100%; border:none;"></iframe>
+  </div>
+</div>

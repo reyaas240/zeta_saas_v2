@@ -62,7 +62,7 @@ examAnalyticsRouter.get('/filters', async (req, res) => {
        FROM srp_academicdetails ad
        LEFT JOIN srp_academicyearmaster ay ON ay.AY_AutoID = ad.AcademicYear
        WHERE ad.SchMasterId = ? AND ad.BranchID = ? AND ad.isDeleted = 0
-       ORDER BY ad.ActiveAY DESC, ay.AY_AutoID DESC`,
+       ORDER BY ay.SortOrder DESC`,
       [schMasterID, branchID]
     );
 

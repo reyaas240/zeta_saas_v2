@@ -7,6 +7,9 @@ import { authRouter } from './src/authRouter.js';
 import { adminRouter } from './src/adminRouter.js';
 import { examAnalyticsRouter } from './src/examAnalyticsRouter.js';
 import { conditionsRouter } from './src/conditionsRouter.js';
+import { templateRouter } from './src/templateRouter.js';
+import { marksEntryRouter } from './src/marksEntryRouter.js';
+import { newsBoardRouter } from './src/newsBoardRouter.js';
 
 dotenv.config();
 
@@ -28,6 +31,9 @@ app.use('/api/auth', authRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/analytics/exam', examAnalyticsRouter);
 app.use('/api/conditions', conditionsRouter);
+app.use('/api/template', templateRouter);
+app.use('/api/marks-entry', marksEntryRouter);
+app.use('/api/news-board', newsBoardRouter);
 
 // Fallback route to Landing Page
 app.get('*', (req, res) => {

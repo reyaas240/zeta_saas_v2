@@ -1,0 +1,26 @@
+<!-- Admin RBAC Access Rights View -->
+<div id="adminRbacPanel" class="admin-panel">
+  <h2 class="page-title">🛡️ User Menu Access Control</h2>
+  <p class="page-subtitle">Assign and manage menu visibility rights for users across the platform.</p>
+
+  <div class="user-select-box">
+    <label style="font-weight:600; color:var(--text-muted);">Select User:</label>
+    <select id="rbacUserSelect" class="control-select" style="background:#0f172a; padding:0.6rem 1rem; border-radius:8px; border:1px solid var(--border-color);">
+      <option value="">Loading users...</option>
+    </select>
+  </div>
+
+  <table class="rights-table">
+    <thead>
+      <tr>
+        <th>Menu Title</th>
+        <th>Key Identifier</th>
+        <th>Parent Menu</th>
+        <th>Access Granted</th>
+      </tr>
+    </thead>
+    <tbody id="rbacRightsTableBody"></tbody>
+  </table>
+
+  <button id="saveRightsBtn" class="btn-save-rights">Save Access Permissions</button>
+</div>

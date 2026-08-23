@@ -96,6 +96,74 @@
     html[data-theme="light"] .var-btn:hover { background: #e2e8f0; color: #172033; }
     html[data-theme="light"] .news-board-filters select, html[data-theme="light"] .news-board-form input { background:#fff; }
     html[data-theme="light"] #nbDescriptionEditor { background:#fff; }
+    
+    /* Dark mode styles for Quill editor */
+    html[data-theme="dark"] #nbDescriptionEditor {
+      background: var(--card-bg) !important;
+      border-color: var(--border-color) !important;
+    }
+    html[data-theme="dark"] .ql-toolbar.ql-snow {
+      background: rgba(30, 41, 59, 0.8) !important;
+      border-color: var(--border-color) !important;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+    html[data-theme="dark"] .ql-container.ql-snow {
+      background: var(--card-bg) !important;
+      border-color: var(--border-color) !important;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+    html[data-theme="dark"] .ql-editor {
+      color: var(--text-main) !important;
+      background: transparent !important;
+    }
+    html[data-theme="dark"] .ql-editor.ql-blank::before {
+      color: var(--text-muted) !important;
+    }
+    html[data-theme="dark"] .ql-stroke {
+      stroke: var(--text-muted) !important;
+    }
+    html[data-theme="dark"] .ql-fill {
+      fill: var(--text-muted) !important;
+    }
+    html[data-theme="dark"] .ql-picker {
+      color: var(--text-main) !important;
+    }
+    html[data-theme="dark"] .ql-picker-label {
+      color: var(--text-main) !important;
+      border-color: var(--border-color) !important;
+    }
+    html[data-theme="dark"] .ql-picker-options {
+      background: rgba(30, 41, 59, 0.95) !important;
+      border-color: var(--border-color) !important;
+    }
+    html[data-theme="dark"] .ql-picker-item {
+      color: var(--text-main) !important;
+    }
+    html[data-theme="dark"] .ql-picker-item:hover {
+      color: var(--primary-light) !important;
+      background: rgba(99, 102, 241, 0.2) !important;
+    }
+    html[data-theme="dark"] .ql-active .ql-stroke {
+      stroke: var(--primary) !important;
+    }
+    html[data-theme="dark"] .ql-active .ql-fill {
+      fill: var(--primary) !important;
+    }
+    html[data-theme="dark"] .ql-active .ql-picker-label {
+      color: var(--primary) !important;
+    }
+    html[data-theme="dark"] .ql-tooltip {
+      background: rgba(30, 41, 59, 0.95) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-main) !important;
+    }
+    html[data-theme="dark"] .ql-tooltip input {
+      background: rgba(15, 23, 42, 0.8) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-main) !important;
+    }
 
     /* App Body Layout */
     .app-body { display: flex; flex: 1; }

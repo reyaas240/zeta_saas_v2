@@ -1,15 +1,12 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
 import { getMasterDb, getTenantDb, getSchoolTenantInfo } from './db.js';
 import { verifyPassword } from './passwordUtil.js';
 import { getUserAllowedMenus, getAllMenus } from './rbacUtil.js';
-
-dotenv.config();
+import config from './config.js';
 
 export const authRouter = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'zetapro_secret';
 
 // Middleware to authenticate JWT cookie and attach tenant context
 export function requireTenantAuth(req, res, next) {
@@ -20,7 +17,7 @@ export function requireTenantAuth(req, res, next) {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, config.jwtSecret);
     req.tenantContext = decoded; // { userID, username, schMasterID, branchID, syllabusID, academicYear }
     next();
   } catch (err) {
@@ -144,13 +141,15 @@ authRouter.post('/login', async (req, res) => {
       isSystemAdmin: Boolean(user.isSystemAdmin)
     };
 
-    const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: '8h' });
+    const token = jwt.sign(tokenPayload, config.jwtSecret, { 
+      expiresIn: config.jwtExpiresIn 
+    });
 
     res.cookie('tenant_session', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: config.isProduction,
       sameSite: 'lax',
-      maxAge: 8 * 3600 * 1000
+      maxAge: config.jwtCookieMaxAge
     });
 
     // 11. Return payload to frontend (NO raw DB credentials)
@@ -345,13 +344,15 @@ authRouter.post('/switch-context', requireTenantAuth, async (req, res) => {
       academicYear: activeAcademicYearId
     };
 
-    const token = jwt.sign(updatedPayload, JWT_SECRET, { expiresIn: '8h' });
+    const token = jwt.sign(updatedPayload, config.jwtSecret, { 
+      expiresIn: config.jwtExpiresIn 
+    });
 
     res.cookie('tenant_session', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: config.isProduction,
       sameSite: 'lax',
-      maxAge: 8 * 3600 * 1000
+      maxAge: config.jwtCookieMaxAge
     });
 
     res.json({

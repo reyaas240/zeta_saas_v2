@@ -1,19 +1,8 @@
 import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import config from './config.js';
 
 // Master DB Pool Connection
-const masterPool = mysql.createPool({
-  host: process.env.MASTER_DB_HOST || 'localhost',
-  port: parseInt(process.env.MASTER_DB_PORT || '3306', 10),
-  user: process.env.MASTER_DB_USER || 'root',
-  password: process.env.MASTER_DB_PASSWORD || '',
-  database: process.env.MASTER_DB_NAME || 'zetaplus_maindb',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+const masterPool = mysql.createPool(config.masterDb);
 
 /**
  * Get a connection pool to the Master DB (zetaplus_maindb)
@@ -24,13 +13,12 @@ export function getMasterDb() {
 
 // Tenant Pool Cache: Map<schMasterID, { pool: mysql.Pool, lastUsed: number, credentials: object }>
 const tenantPoolCache = new Map();
-const IDLE_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes idle timeout
 
 // Periodically evict idle pools
 setInterval(() => {
   const now = Date.now();
   for (const [schMasterID, item] of tenantPoolCache.entries()) {
-    if (now - item.lastUsed > IDLE_TIMEOUT_MS) {
+    if (now - item.lastUsed > config.tenantPool.idleTimeoutMs) {
       console.log(`[Tenant DB Cache] Evicting idle pool for schMasterID=${schMasterID}`);
       item.pool.end().catch(err => console.error(`Error closing idle pool for schMasterID=${schMasterID}:`, err));
       tenantPoolCache.delete(schMasterID);
@@ -72,11 +60,11 @@ export async function getTenantDb(schMasterID) {
 
   const tenantConfig = rows[0];
 
-  // Connection settings
-  let host = process.env.MASTER_DB_HOST || 'localhost';
-  let port = parseInt(process.env.MASTER_DB_PORT || '3306', 10);
-  let db_username = process.env.MASTER_DB_USER || 'zetaplususer';
-  let db_password = process.env.MASTER_DB_PASSWORD || 'Wire2010!*';
+  // Connection settings - use config defaults for localhost multi-tenant setup
+  let host = config.tenantDb.host;
+  let port = config.tenantDb.port;
+  let db_username = config.tenantDb.user;
+  let db_password = config.tenantDb.password;
   let db_name = null;
 
   // Check if raw credentials from DB are unencrypted plain values
@@ -117,9 +105,7 @@ export async function getTenantDb(schMasterID) {
     user: db_username,
     password: db_password,
     database: db_name,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+    ...config.tenantPool
   });
 
   tenantPoolCache.set(schMasterID, {
@@ -136,6 +122,18 @@ export async function getTenantDb(schMasterID) {
   });
 
   return pool;
+}
+
+/**
+ * Evict a specific tenant pool from cache (useful when credentials change)
+ */
+export async function evictTenantPool(schMasterID) {
+  if (tenantPoolCache.has(schMasterID)) {
+    const item = tenantPoolCache.get(schMasterID);
+    await item.pool.end().catch(err => console.error(`Error evicting pool for schMasterID=${schMasterID}:`, err));
+    tenantPoolCache.delete(schMasterID);
+    console.log(`[Tenant DB Cache] Evicted pool for schMasterID=${schMasterID}`);
+  }
 }
 
 /**

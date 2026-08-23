@@ -1,6 +1,7 @@
 import express from 'express';
 import { requireTenantAuth } from './authRouter.js';
 import { getTenantDb } from './db.js';
+import config from './config.js';
 
 const marksEntryRouter = express.Router();
 marksEntryRouter.use(requireTenantAuth);

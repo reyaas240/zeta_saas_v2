@@ -94,7 +94,8 @@
     html[data-theme="light"] .rights-table th { background: #f8fafc; }
     html[data-theme="light"] .var-btn { background: #f1f5f9; border-color: #cbd5e1; color: #334155; }
     html[data-theme="light"] .var-btn:hover { background: #e2e8f0; color: #172033; }
-    html[data-theme="light"] .news-board-filters select, html[data-theme="light"] .news-board-form input, html[data-theme="light"] .news-board-form textarea { background:#fff; }
+    html[data-theme="light"] .news-board-filters select, html[data-theme="light"] .news-board-form input { background:#fff; }
+    html[data-theme="light"] #nbDescriptionEditor { background:#fff; }
 
     /* App Body Layout */
     .app-body { display: flex; flex: 1; }
@@ -152,11 +153,16 @@
     .news-board-heading, .notice-card-title-row { justify-content:space-between; }.news-board-heading { margin-bottom:1.25rem; }
     .news-board-filters { padding:1rem; margin-bottom:1rem; border:1px solid var(--border-color); border-radius:12px; background:var(--card-bg); }
     .news-board-filters label, .news-board-form label { display:flex; flex-direction:column; gap:0.35rem; color:var(--text-muted); font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; }
-    .news-board-filters select, .news-board-form input, .news-board-form textarea { padding:0.6rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; background:#0f172a; color:var(--text-main); font:inherit; text-transform:none; letter-spacing:normal; }
+    .news-board-filters select, .news-board-form input { padding:0.6rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; background:#0f172a; color:var(--text-main); font:inherit; text-transform:none; letter-spacing:normal; }
     .news-board-message { min-height:1.2rem; margin:0.5rem 0; font-size:0.875rem; }.news-board-message.success { color:#34d399; }.news-board-message.error { color:#f87171; }
-    .news-board-list { display:grid; gap:0.9rem; }.notice-card { background:var(--card-bg); border:1px solid var(--border-color); border-left:4px solid var(--primary); border-radius:12px; padding:1.15rem 1.25rem; }.notice-card.is-expired { border-left-color:#f59e0b; opacity:0.8; }.notice-card-meta { flex-wrap:wrap; color:var(--text-muted); font-size:0.76rem; }.notice-card h3 { font-family:'Outfit',sans-serif; font-size:1.1rem; margin:0.75rem 0; }.notice-card-description { white-space:pre-wrap; line-height:1.6; color:var(--text-main); }.notice-card-expiry { margin-top:0.75rem; color:var(--text-muted); font-size:0.8rem; }
+    .news-board-list { display:grid; gap:0.9rem; }.notice-card { background:var(--card-bg); border:1px solid var(--border-color); border-left:4px solid var(--primary); border-radius:12px; padding:1.15rem 1.25rem; }.notice-card.is-expired { border-left-color:#f59e0b; opacity:0.8; }.notice-card-meta { flex-wrap:wrap; color:var(--text-muted); font-size:0.76rem; }.notice-card h3 { font-family:'Outfit',sans-serif; font-size:1.1rem; margin:0.75rem 0; }.notice-card-description { line-height:1.6; color:var(--text-main); }.notice-card-description :first-child { margin-top:0; }.notice-card-description :last-child { margin-bottom:0; }.notice-card-expiry { margin-top:0.75rem; color:var(--text-muted); font-size:0.8rem; }
     .notice-status { padding:0.2rem 0.5rem; border-radius:999px; font-weight:700; }.notice-status.published { color:#34d399; background:rgba(16,185,129,.13); }.notice-status.draft { color:#fbbf24; background:rgba(245,158,11,.13); }.nb-icon-action { border:0; background:transparent; color:var(--text-muted); cursor:pointer; font-size:1.15rem; padding:0.25rem; }.nb-icon-action:hover { color:var(--primary-light); }.nb-icon-action.danger:hover { color:#f87171; }.news-board-empty { padding:3rem 1rem; color:var(--text-muted); text-align:center; border:1px dashed var(--border-color); border-radius:12px; }
-    .news-board-modal { position:fixed; inset:0; z-index:1000; overflow:auto; padding:3rem 1rem; background:rgba(9,13,22,.7); }.news-board-form { max-width:720px; margin:auto; padding:1.5rem; border:1px solid var(--border-color); border-radius:16px; background:var(--panel-bg); box-shadow:0 20px 50px rgba(0,0,0,.35); display:grid; gap:1rem; }.news-board-form-head { display:flex; justify-content:space-between; align-items:center; }.news-board-form h3 { font-family:'Outfit',sans-serif; }.news-board-form-grid > label { flex:1; }.news-board-form textarea { resize:vertical; }.news-board-form fieldset { display:flex; gap:1rem; flex-wrap:wrap; padding:0.75rem; border:1px solid var(--border-color); border-radius:8px; }.news-board-form fieldset label, .nb-inline { flex-direction:row !important; align-items:center; text-transform:none !important; }.news-board-actions { justify-content:flex-end; }
+    .news-board-modal { position:fixed; inset:0; z-index:1000; overflow:auto; padding:3rem 1rem; background:rgba(9,13,22,.7); }.news-board-form { max-width:720px; margin:auto; padding:1.5rem; border:1px solid var(--border-color); border-radius:16px; background:var(--panel-bg); box-shadow:0 20px 50px rgba(0,0,0,.35); display:grid; gap:1rem; }.news-board-form-head { display:flex; justify-content:space-between; align-items:center; }.news-board-form h3 { font-family:'Outfit',sans-serif; }.news-board-form-grid > label { flex:1; }.news-board-form fieldset { display:flex; gap:1rem; flex-wrap:wrap; padding:0.75rem; border:1px solid var(--border-color); border-radius:8px; }.news-board-form fieldset label, .nb-inline { flex-direction:row !important; align-items:center; text-transform:none !important; }.news-board-actions { justify-content:flex-end; }
+    /* Quill Editor Styles */
+    .ql-toolbar { border: 1px solid var(--border-color) !important; border-top-left-radius: 8px; border-top-right-radius: 8px; background: var(--card-bg) !important; }
+    .ql-container { border: 1px solid var(--border-color) !important; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; background: var(--card-bg) !important; min-height: 150px; }
+    .ql-editor { min-height: 150px; color: var(--text-main) !important; }
+    .ql-editor p { margin: 0; }
 
     @media (max-width: 768px) {
       .app-body { flex-direction: column; }
@@ -308,13 +314,14 @@
     }
 
     async function loadPageScripts(jsFiles) {
+      const cacheBuster = Date.now(); // Force fresh load every time
       for (const jsFile of jsFiles) {
         const scriptId = `spa-script-${jsFile}`;
         if (document.getElementById(scriptId)) continue; // already loaded
         await new Promise((resolve, reject) => {
           const script = document.createElement('script');
           script.id = scriptId;
-          script.src = `/js/pages/${jsFile}`;
+          script.src = `/js/pages/${jsFile}?v=${cacheBuster}`;
           script.onload = resolve;
           script.onerror = reject;
           document.body.appendChild(script);

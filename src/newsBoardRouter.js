@@ -1,6 +1,7 @@
 import express from 'express';
 import { requireTenantAuth } from './authRouter.js';
 import { getTenantDb } from './db.js';
+import config from './config.js';
 
 export const newsBoardRouter = express.Router();
 newsBoardRouter.use(requireTenantAuth);
@@ -101,8 +102,10 @@ newsBoardRouter.get('/dates', async (req, res) => {
     const db = await getDb(req);
     const { schMasterID, branchID } = req.tenantContext;
     const [dates] = await db.query(
-      `SELECT DISTINCT DATE_FORMAT(NewsDate, '%Y-%m-%d') AS date FROM srp_newsboard
-       WHERE SchMasterID = ? AND BranchID = ? ORDER BY NewsDate DESC`,
+      `SELECT DATE_FORMAT(NewsDate, '%Y-%m-%d') AS date FROM srp_newsboard
+       WHERE SchMasterID = ? AND BranchID = ? 
+       GROUP BY DATE_FORMAT(NewsDate, '%Y-%m-%d')
+       ORDER BY MAX(NewsDate) DESC`,
       [schMasterID, branchID]
     );
     res.json({ success: true, dates: dates.map(row => row.date) });

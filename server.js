@@ -1,6 +1,5 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { authRouter } from './src/authRouter.js';
@@ -10,14 +9,12 @@ import { conditionsRouter } from './src/conditionsRouter.js';
 import { templateRouter } from './src/templateRouter.js';
 import { marksEntryRouter } from './src/marksEntryRouter.js';
 import { newsBoardRouter } from './src/newsBoardRouter.js';
-
-dotenv.config();
+import config from './src/config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -40,6 +37,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 ZetaPlus SaaS Platform running on http://localhost:${PORT}`);
+app.listen(config.port, () => {
+  console.log(`🚀 ZetaPlus SaaS Platform running on http://localhost:${config.port}`);
 });

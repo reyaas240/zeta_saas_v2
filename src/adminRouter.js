@@ -2,6 +2,7 @@ import express from 'express';
 import { getMasterDb, getTenantDb } from './db.js';
 import { requireTenantAuth } from './authRouter.js';
 import { getAllMenus, saveUserMenuRights } from './rbacUtil.js';
+import config from './config.js';
 
 export const adminRouter = express.Router();
 

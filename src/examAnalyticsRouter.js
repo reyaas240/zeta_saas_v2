@@ -1,6 +1,7 @@
 import express from 'express';
 import { requireTenantAuth } from './authRouter.js';
 import { getTenantDb } from './db.js';
+import config from './config.js';
 
 export const examAnalyticsRouter = express.Router();
 
@@ -184,7 +185,7 @@ examAnalyticsRouter.get('/data', async (req, res) => {
       totalEvaluated += count;
       sumMarks += (row.avgMarks || 0) * count;
       if (row.maxMarks > highestScore) highestScore = row.maxMarks;
-      if (['A*', 'A', 'B', 'C', 'P', 'PASS'].includes(grade.toUpperCase())) {
+      if (config.passingGrades.includes(grade.toUpperCase())) {
         passingCount += count;
       }
     });
